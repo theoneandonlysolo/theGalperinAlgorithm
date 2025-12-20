@@ -1,0 +1,13 @@
+body {
+    background-color:rgb(19, 18, 18);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;     
+    height: 100vh;          
+}
+
+#screen {
+    background: #111;
+}
+
