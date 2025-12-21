@@ -8,8 +8,15 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
+    <div classname="n-input">
+        <label for="digitsInput">Digits of π (n): </label>
+        <input type="number" id="digitsInput" min="0" max="6" value="1">
+        <button id="setNBtn">Set</button>
+        <h2 id="collisions"># of collisions: </h2>
+        <h3 id="simulationTermination"></h3>
+    </div>
     <div className="canvasDiv">
-        <canvas id="screen" width="625" height="315"></canvas>  
+        <canvas id="screen" width="900" height="300"></canvas>  
     </div>
     
     <script src="./index.js"></script>
