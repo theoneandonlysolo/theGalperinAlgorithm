@@ -1,5 +1,5 @@
 
-# The Collision Algorithm
+# The Galperin Algorithm
 
   
 
