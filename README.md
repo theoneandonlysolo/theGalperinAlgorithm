@@ -53,7 +53,7 @@ This project visualizes Gregory Galperin’s 2003 discovery:
 
   
 
-It’s intentionally the most inefficient π calculator in existence — which made it perfect for a fun portfolio project.
+It’s intentionally the most inefficient π calculator in existence, which made it perfect for a fun portfolio project.
 
   
 
