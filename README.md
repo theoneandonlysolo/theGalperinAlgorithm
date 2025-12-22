@@ -112,7 +112,7 @@ Then I represented each block with an object:
       mass, x, y, width, height, vx
     } 
 
-Initially, everything was static — the blocks didn’t move.  
+Initially, everything was static, the blocks didn’t move.  
 So I created an `animate()` loop using `requestAnimationFrame()` and updated each `x` by implementing a compact form basic physical kinematics (uniform motion):
 
 `x += vx * dt` 
@@ -192,7 +192,7 @@ That realization came much later, after multiple failed termination attempts.
 
 To compute pi using block collisions, I needed formulas that give the **new velocities after two masses collide elastically in 1 dimension.**
 
-Instead of memorizing them, I derived them from first principles of Newton's laws, with the help of my one of my classmates and Physics professor.
+Instead of memorizing them, I derived them from first principles of Newton's laws, with the help of my one of my classmates.
 
 ## Step 1 — Define the symbols
 
@@ -343,7 +343,7 @@ Looked smoother visually, but the camera kept drifting forever, so the sim never
 
 ### **Attempt C — Margin-based Panning**
 
-Still too messy — the camera would scroll ahead into empty space.
+Still too messy, the camera would scroll ahead into empty space.
 
 Eventually, I learned the most important constraint:
 
