@@ -8,10 +8,13 @@ body {
     height: 100vh;          
     color: white;
     gap: 55px;
+    overflow-x: hidden;
 }
 
 #screen {
     background: #111;
+    height: 350px;
+    width: 1000px;
 }
 
 .n-input {
@@ -22,6 +25,9 @@ body {
 
 }
 
-.collision {
-    
+.canvasDiv {
+    height: 350px;
+    width: 900px;
+    overflow-x: auto;
+    overflow-y: hidden;
 }

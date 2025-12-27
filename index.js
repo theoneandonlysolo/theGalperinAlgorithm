@@ -60,10 +60,15 @@ function drawBlock(ctx, block) {
   ctx.lineWidth = 2;
   ctx.strokeRect(screenX, screenY, block.width, block.height);
 
+  ctx.fillText("x = " + Math.round(block.x),
+    screenX + block.width / 2,
+    320
+  );
   ctx.fillText(block.mass + " kg",
     screenX + block.width / 2,
-    screenY + block.height / 2
+    screenY - 10
   );
+
 }
 
 
@@ -175,7 +180,10 @@ function animate(time) {
     bigBlock.x + bigBlock.width
   );
 
-
+   const leftmost = Math.min(
+    refBlock.x + refBlock.width,
+    bigBlock.x + bigBlock.width
+  );
 
 
 
@@ -191,10 +199,12 @@ if (!cameraFrozen) {
     refBlock.x + refBlock.width,
     bigBlock.x + bigBlock.width
   );
-
+  const expected = Math.floor(Math.PI * Math.pow(10, n));
   const margin = 200;
-  if (rightmost > canvas.width - margin) {
+  if (rightmost > canvas.width - margin && collisions - 1 === expected) {
     cameraX = rightmost - (canvas.width - margin);
+  } else {
+    cameraX = leftmost - (canvas.width - margin);
   }
 }
   // clamp so we never scroll into empty left space
