@@ -53,7 +53,7 @@ This project visualizes Gregory Galperin’s 2003 discovery:
 
   
 
-It’s intentionally the most inefficient π calculator in existence — which made it perfect for a fun portfolio project.
+It’s intentionally the most inefficient π calculator in existence, which made it perfect for a fun portfolio project.
 
   
 
@@ -112,7 +112,7 @@ Then I represented each block with an object:
       mass, x, y, width, height, vx
     } 
 
-Initially, everything was static — the blocks didn’t move.  
+Initially, everything was static, the blocks didn’t move.  
 So I created an `animate()` loop using `requestAnimationFrame()` and updated each `x` by implementing a compact form basic physical kinematics (uniform motion):
 
 `x += vx * dt` 
@@ -142,25 +142,8 @@ So I introduced:
 
 This stopped animation from triggering prematurely.
 
-## 4. Physics Implementation
-I added basic elastic collision formulas:
-
-    v1 = ... 
-    v2 = ...
-
-But the blocks passed through each other; they were moving too fast, and collisions happened between frames.
-
-That’s when I realized I needed **substeps**:
-
-    for (let i = 0; i < 200; i++) { 
-         const dt2 = dt / 200;
-      // simulate micro-physics 
-     }
-
-
-This fixed tunneling.
   
-## **5. Wall Collisions & Velocity**
+## **4. Wall Collisions & Velocity**
 
  #### Collisions 
  For collisions, I added:
@@ -192,7 +175,7 @@ That realization came much later, after multiple failed termination attempts.
 
 To compute pi using block collisions, I needed formulas that give the **new velocities after two masses collide elastically in 1 dimension.**
 
-Instead of memorizing them, I derived them from first principles of Newton's laws, with the help of my one of my classmates and Physics professor.
+Instead of memorizing them, I derived them from first principles of Newton's laws, with the help of my one of my classmates.
 
 ## Step 1 — Define the symbols
 
@@ -311,8 +294,20 @@ v2 = [ 2* m1 * u1 + (m2 − m1) * u2 ] / (m1 + m2)
     v1 = ((m1 − m2)/(m1 + m2))u1 + (2m2/(m1 + m2))u2
     v2 = (2m1/(m1 + m2))u1 + ((m2 − m1)/(m1 + m2))u2 
 
+---
+But the blocks passed through each other; they were moving too fast, and collisions happened between frames.
 
-## **6. Introducing  n**
+That’s when I realized I needed **substeps**:
+
+    for (let i = 0; i < 200; i++) { 
+         const dt2 = dt / 200;
+      // simulate micro-physics 
+     }
+
+
+This fixed tunneling.
+
+## **5. Introducing  n**
 
 I added an input box so users choose **n**, clamping it to `[0,4]`:
 
@@ -327,7 +322,7 @@ I added an input box so users choose **n**, clamping it to `[0,4]`:
 
 Beyond 4, browsers choke.
 
-## **7. The Camera **
+## **6. The Camera **
 
 Originally, the camera was fixed. With large n, the blocks left the screen immediately.
 
@@ -343,7 +338,7 @@ Looked smoother visually, but the camera kept drifting forever, so the sim never
 
 ### **Attempt C — Margin-based Panning**
 
-Still too messy — the camera would scroll ahead into empty space.
+Still too messy, the camera would scroll ahead into empty space.
 
 Eventually, I learned the most important constraint:
 
@@ -359,7 +354,7 @@ and only executed:
 
 That was a breakthrough.
 
-## **8. Pi-Based Termination Logic**
+## **7. Pi-Based Termination Logic**
 
 I tried multiple methods to know//console log when the simulation was “done”:
 

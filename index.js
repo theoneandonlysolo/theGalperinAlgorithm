@@ -19,6 +19,12 @@ let n = 1;
 let running = null;
 let cameraX = 0;
 let cameraFrozen = false;
+let blocksVisible = false;
+let blockAlpha = 0;          // 0 => 1 fade-in
+const fadeDuration = 0.6;    // seconds
+let axisProgress = 0;        // 0 => 1
+const axisDuration = 0.7;    // seconds
+let axisAnimating = false;
 
 
 //setting variables
@@ -45,7 +51,7 @@ function setVariables() {
     y: 297,
     width: 75,
     height: 75,
-    vx: -50            // moving left
+    vx: -100            // moving left
   };
 }
 
@@ -55,6 +61,9 @@ function drawBlock(ctx, block) {
 
   const screenX = block.x - cameraX;
   const screenY = block.y - block.height;
+
+  ctx.save();
+  ctx.globalAlpha = blockAlpha;   // fade factor
 
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
@@ -69,6 +78,7 @@ function drawBlock(ctx, block) {
     screenY - 10
   );
 
+  ctx.restore();
 }
 
 
@@ -124,10 +134,40 @@ function animate(time) {
   //clear
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // draw axes
-  ctx.fillRect(0 - cameraX, 298, canvas.width + cameraX, 2); // long axis with moving camera, aka cameraX variable
-  ctx.fillRect(0 - cameraX, 0, 2, 300);
 
+
+// axis animation
+if (axisAnimating) {
+  axisProgress += dt / axisDuration;
+  if (axisProgress >= 1) {
+    axisProgress = 1;
+    axisAnimating = false;
+  }
+}
+
+// X axis extends right
+const axisWidth = (canvas.width + cameraX) * axisProgress;
+
+// Y axis extends upward
+const axisHeight = 300 * axisProgress;
+
+// draw animated axes
+ctx.fillRect(0 - cameraX, 298, axisWidth, 2);          // X axis
+ctx.fillRect(0 - cameraX, 300 - axisHeight, 2, axisHeight);  // Y axis
+
+
+const axisCoversBig =
+  axisWidth >= (bigBlock.x + bigBlock.width - cameraX);
+
+if (!blocksVisible && axisCoversBig) {
+  blocksVisible = true;
+}
+
+
+if (blocksVisible && blockAlpha < 1) {
+  blockAlpha += dt / fadeDuration;
+  if (blockAlpha > 1) blockAlpha = 1;
+}
   // physics in small substeps
   const steps = 200;
   for (let i = 0; i < steps; i++) {
@@ -142,35 +182,65 @@ function animate(time) {
     // console.log("bigBlock:", bigBlock);
 
     // 1. wall bounce — only if moving left
-    if (refBlock.x < 0) {
+    // if (refBlock.x < 0) {
+    //   refBlock.x = 0;
+    //   if (refBlock.vx < 0) {
+    //     refBlock.vx *= -1;
+    //     collisions++;
+    //   }
+    // }
+
+    if (refBlock.x <= 0 && refBlock.vx < 0) {
       refBlock.x = 0;
-      if (refBlock.vx < 0) {
-        refBlock.vx *= -1;
-        collisions++;
-      }
+      refBlock.vx = -refBlock.vx;
+      collisions++;
     }
 
     // 2. block–block collision — only if small isn't stuck on wall
-    if (bigBlock.x <= refBlock.x + refBlock.width) {
-      bigBlock.x = refBlock.x + refBlock.width;
+    // if (bigBlock.x <= refBlock.x + refBlock.width) {
+    //   bigBlock.x = refBlock.x + refBlock.width;
 
-      const m1 = refBlock.mass;
-      const m2 = bigBlock.mass;
-      const u1 = refBlock.vx;
-      const u2 = bigBlock.vx;
+    //   const m1 = refBlock.mass;
+    //   const m2 = bigBlock.mass;
+    //   const u1 = refBlock.vx;
+    //   const u2 = bigBlock.vx;
 
-      const v1 =
-        ((m1 - m2) / (m1 + m2)) * u1 +
-        (2 * m2 / (m1 + m2)) * u2;
+    //   const v1 =
+    //     ((m1 - m2) / (m1 + m2)) * u1 +
+    //     (2 * m2 / (m1 + m2)) * u2;
 
-      const v2 =
-        (2 * m1 / (m1 + m2)) * u1 +
-        ((m2 - m1) / (m1 + m2)) * u2;
+    //   const v2 =
+    //     (2 * m1 / (m1 + m2)) * u1 +
+    //     ((m2 - m1) / (m1 + m2)) * u2;
 
-      refBlock.vx = v1;
-      bigBlock.vx = v2;
-      collisions++;
-    }
+    //   refBlock.vx = v1;
+    //   bigBlock.vx = v2;
+    //   collisions++;
+    // }
+    if (
+        bigBlock.x <= refBlock.x + refBlock.width &&
+        bigBlock.vx < refBlock.vx      // must be moving TOWARD each other
+      ) {
+        bigBlock.x = refBlock.x + refBlock.width;
+
+        const m1 = refBlock.mass;
+        const m2 = bigBlock.mass;
+        const u1 = refBlock.vx;
+        const u2 = bigBlock.vx;
+
+        const v1 =
+          ((m1 - m2) / (m1 + m2)) * u1 +
+          (2 * m2 / (m1 + m2)) * u2;
+
+        const v2 =
+          (2 * m1 / (m1 + m2)) * u1 +
+          ((m2 - m1) / (m1 + m2)) * u2;
+
+        refBlock.vx = v1;
+        bigBlock.vx = v2;
+
+        collisions++;
+      }
   }
 
 
@@ -210,8 +280,6 @@ if (!cameraFrozen) {
   // clamp so we never scroll into empty left space
 if (cameraX < 0) cameraX = 0;
 
-  ctx.fillRect(0 - cameraX, 298, canvas.width + cameraX, 2);
-  ctx.fillRect(0 - cameraX, 0, 2, 300);
 
   drawBlock(ctx, refBlock);
   drawBlock(ctx, bigBlock);
@@ -219,21 +287,30 @@ if (cameraX < 0) cameraX = 0;
 }
 
 
+
 setButton.addEventListener("click", () => {
+  
   let newN = Number(input.value);
   console.clear();
   simulationTermination.textContent = ""
 
-  //restricting n between 0 and 4, because if its superior to 4, the mass and therefore physics would be too much for the average browser to handle
+  //restricting n between 0 and 6, because if its superior to 6, the mass and therefore physics would be too much for the average browser to handle
   if (newN < 0) newN = 0;
-  if (newN > 4) newN = 4;
+  if (newN > 6) newN = 4;
 
   n = newN;
   input.value = n; //reset input visually if needed
   console.log("new n = ", n);
 
   setVariables();
+  blocksVisible = false;
+  blockAlpha = 0;
   lastTime = null;              // resets simulation time
+
+    // reset axis animation
+  axisProgress = 0;
+  axisAnimating = true;
+
   running = true;
   cameraFrozen = false;
   requestAnimationFrame(animate);
