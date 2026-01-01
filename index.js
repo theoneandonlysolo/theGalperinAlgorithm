@@ -1,3 +1,4 @@
+
 //basics, setting the env
 const canvas = document.getElementById("screen");
 const ctx = canvas.getContext("2d");
@@ -6,6 +7,7 @@ const input = document.getElementById("digitsInput");
 const setButton = document.getElementById("setNBtn");
 const collisionCounter = document.getElementById("collisions");
 const simulationTermination = document.getElementById("simulationTermination");
+const collisionSound = new Audio("assets/beep.mp3");
 
 //styles
 ctx.fillStyle = "white";
@@ -21,9 +23,9 @@ let cameraX = 0;
 let cameraFrozen = false;
 let blocksVisible = false;
 let blockAlpha = 0;          // 0 => 1 fade-in
-const fadeDuration = 0.6;    // seconds
+const fadeDuration = 1;    // seconds
 let axisProgress = 0;        // 0 => 1
-const axisDuration = 0.7;    // seconds
+const axisDuration = 1.5;    // seconds
 let axisAnimating = false;
 
 
@@ -81,6 +83,7 @@ function drawBlock(ctx, block) {
   ctx.restore();
 }
 
+let simulationTerminated = true;
 
 //checking if simulation is terminated
 let lastTime = null;
@@ -100,6 +103,7 @@ function checkTermination() {
 
     if (smallGone && bigGone) {
       running = false;
+      simulationTerminated = true;
       console.log("sim terminated after drift-off");
       console.log("total collisions =", collisions);
       simulationTermination.textContent = "simulation terminate";
@@ -117,13 +121,15 @@ function checkTermination() {
     }
   }
 
+function playCollisionSound() {
+  collisionSound.currentTime = 0; 
+  // collisionSound.play();
+}
+
   // animation function
 function animate(time) {
   
-  if (!running) {
-    updateRunning(running);
-    return;
-  }
+  if (!running) return;
   requestAnimationFrame(animate);
 
 
@@ -152,8 +158,8 @@ const axisWidth = (canvas.width + cameraX) * axisProgress;
 const axisHeight = 300 * axisProgress;
 
 // draw animated axes
-ctx.fillRect(0 - cameraX, 298, axisWidth, 2);          // X axis
-ctx.fillRect(0 - cameraX, 300 - axisHeight, 2, axisHeight);  // Y axis
+ctx.fillRect(0 - cameraX, 298, axisWidth, 1);          // X axis
+ctx.fillRect(0 - cameraX, 298 - axisHeight, 1, axisHeight);  // Y axis
 
 
 const axisCoversBig =
@@ -194,6 +200,7 @@ if (blocksVisible && blockAlpha < 1) {
       refBlock.x = 0;
       refBlock.vx = -refBlock.vx;
       collisions++;
+      playCollisionSound();
     }
 
     // 2. block–block collision — only if small isn't stuck on wall
@@ -240,6 +247,7 @@ if (blocksVisible && blockAlpha < 1) {
         bigBlock.vx = v2;
 
         collisions++;
+        playCollisionSound();
       }
   }
 
@@ -280,6 +288,7 @@ if (!cameraFrozen) {
   // clamp so we never scroll into empty left space
 if (cameraX < 0) cameraX = 0;
 
+  simulationTerminated = false;
 
   drawBlock(ctx, refBlock);
   drawBlock(ctx, bigBlock);
@@ -288,30 +297,155 @@ if (cameraX < 0) cameraX = 0;
 
 
 
-setButton.addEventListener("click", () => {
+// setButton.addEventListener("click", () => {
   
-  let newN = Number(input.value);
-  console.clear();
-  simulationTermination.textContent = ""
+//   let newN = Number(input.value);
+//   console.clear();
+//   simulationTermination.textContent = ""
 
-  //restricting n between 0 and 6, because if its superior to 6, the mass and therefore physics would be too much for the average browser to handle
-  if (newN < 0) newN = 0;
-  if (newN > 6) newN = 4;
+//   //restricting n between 0 and 6, because if its superior to 6, the mass and therefore physics would be too much for the average browser to handle
+//   if (newN < 0) newN = 0;
+//   if (newN > 6) newN = 4;
 
-  n = newN;
-  input.value = n; //reset input visually if needed
-  console.log("new n = ", n);
+//   n = newN;
+//   input.value = n; //reset input visually if needed
+//   console.log("new n = ", n);
 
-  setVariables();
-  blocksVisible = false;
-  blockAlpha = 0;
-  lastTime = null;              // resets simulation time
+//   setVariables();
+//   blocksVisible = false;
+//   blockAlpha = 0;
+//   lastTime = null;              // resets simulation time
 
-    // reset axis animation
-  axisProgress = 0;
-  axisAnimating = true;
+//     // reset axis animation
+//   axisProgress = 0;
+//   axisAnimating = true;
 
-  running = true;
-  cameraFrozen = false;
-  requestAnimationFrame(animate);
+//   running = true;
+//   cameraFrozen = false;
+//   requestAnimationFrame(animate);
+// });
+
+//intro text
+const text = `In 2003, physicist Gregory Galperin published a research paper showing how an idealized elastic collision simulation between two blocks can be used to compute digits of π. The setup is famously absurd in its inefficiency, requiring exponentially more collisions, and thus time, to reveal each additional digit, and it has since become known in the mathematics community as one of the most comically impractical ways to approximate π. But we couldn’t possibly pass up the chance to try it out for ourselves, could we? So let’s go ahead;
+
+How many digits of π would you like to compute today?`;
+
+const p = document.getElementById("typewriter");
+
+// split text into "before" and "last line"
+const lines = text.split("\n");
+const lastLine = lines.pop();             
+const beforeText = lines.join("\n") + "\n"; 
+
+const normalSpan = document.createElement("span");
+const boldSpan   = document.createElement("strong");
+
+const cursor = document.createElement("span");
+cursor.className = "cursor";
+cursor.textContent = ""; 
+
+// put them in the paragraph in order
+p.appendChild(normalSpan);
+p.appendChild(boldSpan);
+p.appendChild(cursor);
+
+let i = 0;  
+let j = 0;  
+let phase = "normal"; 
+let typingDone = false;
+let userInput = "";
+
+function type() {
+  if (phase === "normal") {
+    if (i < beforeText.length) {
+      normalSpan.textContent += beforeText[i];
+      i++;
+      setTimeout(type, 25);
+    } else {
+      phase = "bold";   
+      setTimeout(type, 500); 
+    }
+  } else if (phase === "bold") {
+    if (j < lastLine.length) {
+      boldSpan.textContent += lastLine[j];
+      j++;
+      setTimeout(type, 25);
+      if (j === 53) {
+        typingDone = true;
+      }
+    }
+  }
+}
+
+type();
+
+
+const canvasDiv = document.getElementById("appear");
+const crtC = document.getElementById("crtC");
+canvasDiv.style.display = "none";
+
+
+// typing numbers
+document.addEventListener("keydown", e => {
+
+  if (!typingDone) return;
+
+  // numbers only
+  if (e.key >= "0" && e.key <= "6") {
+    userInput += e.key;
+    p.insertBefore(document.createTextNode(" " + e.key), cursor);
+  }
+
+  // delete
+  if (e.key === "Backspace" && userInput.length > 0) {
+    userInput = userInput.slice(0, -1);
+    p.removeChild(cursor.previousSibling);
+  }
+});
+
+
+
+// simulation
+document.addEventListener("keydown", e => {
+
+  if (!typingDone && !simulationTerminated) return;
+
+
+  if (e.key === "Enter" && userInput.length > 0) {
+
+    normalSpan.classList.add("fade-out")
+
+    // fade intro text
+    setTimeout(() => {
+        p.classList.add("move-to-top");
+    }, 20);
+
+    // lift question up
+    
+
+    setTimeout(() => { 
+
+      let newN = Number(userInput);
+      if (newN < 0) newN = 0;
+      if (newN > 6) newN = 6;
+
+      n = newN;
+
+      console.log("starting with n = ", n);
+
+      setVariables();
+      lastTime = null;
+      axisProgress  = 0;
+      axisAnimating = true;
+      blocksVisible = false;
+      blockAlpha    = 0;
+
+      cameraFrozen  = false;
+      running       = true;
+
+      canvasDiv.style.display = "block";
+      requestAnimationFrame(animate);
+      collisionCounter.classList.add("fade-in");
+    }, 400);
+  }
 });
