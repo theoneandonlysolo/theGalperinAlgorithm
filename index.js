@@ -83,8 +83,6 @@ function drawBlock(ctx, block) {
   ctx.restore();
 }
 
-let simulationTerminated = true;
-
 //checking if simulation is terminated
 let lastTime = null;
 function checkTermination() {
@@ -288,8 +286,6 @@ if (!cameraFrozen) {
   // clamp so we never scroll into empty left space
 if (cameraX < 0) cameraX = 0;
 
-  simulationTerminated = false;
-
   drawBlock(ctx, refBlock);
   drawBlock(ctx, bigBlock);
   
@@ -408,7 +404,7 @@ document.addEventListener("keydown", e => {
 // simulation
 document.addEventListener("keydown", e => {
 
-  if (!typingDone && !simulationTerminated) return;
+  if (!typingDone && !running) return;
 
 
   if (e.key === "Enter" && userInput.length > 0) {
