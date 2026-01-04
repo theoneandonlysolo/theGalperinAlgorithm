@@ -41,10 +41,10 @@ function setVariables() {
   refBlock = {
     mass: 1,          // kg
     x: 50,           // pixels from left
-    y: 297,           // pixels from top (we’ll set this to sit on the axis)
+    y: 297,           // pixels from top
     width: 50,        // block width in px
     height: 50,       // block height in px
-    vx: 0             // horizontal velocity (px / second) – 0 for now
+    vx: 0             // horizontal velocity 
   };
 
   bigBlock = {
@@ -83,28 +83,81 @@ function drawBlock(ctx, block) {
   ctx.restore();
 }
 
+const fullPi = "π = 3.14159265359";
+let piShown = false;
+
+function showPiResult(n) {
+  if (piShown) return;          // prevent running twice
+  piShown = true;
+
+  // create the paragraph under #typewriter
+  const pPi = document.createElement("p");
+  pPi.id = "pi-output";
+  document.querySelector(".crt-content").insertBefore(
+    pPi,
+    document.getElementById("appear")
+  );
+
+  // number of digits after decimal we really computed  
+
+  const digits = "3.1415926535897932384626433832795...";
+  const before = "π = "
+
+const highlighted =
+  `<span class="highlight">${digits.slice(0, n + 2)}</span>` +
+  digits.slice(n + 2);
+
+  // typewriter animation 
+  let i = 0;
+  const temp = document.createElement("span");
+  pPi.appendChild(temp);
+
+  const target = before + highlighted;
+
+  pPi.style.opacity = 1;
+
+
+  function type() {
+    if (i <= target.length) {
+      temp.innerHTML = target.slice(0, i);
+      i++;
+      setTimeout(type, 30);
+    }
+  }
+
+  type();
+}
+
 //checking if simulation is terminated
 let lastTime = null;
+let reachedPiTime = null;
+
 function checkTermination() {
   const expected = Math.floor(Math.PI * Math.pow(10, n));
 
-  // 1. When π-based collision count is reached → freeze camera
   if (!cameraFrozen && collisions >= expected) {
     cameraFrozen = true;
-    console.log("camera frozen — pi limit reached");
+    reachedPiTime = performance.now();     // start timer
+    console.log("camera frozen pi limit reached");
   }
 
-  // 2. Once camera is frozen, wait until BOTH blocks exit screen
+  if (cameraFrozen && reachedPiTime !== null) {
+    const elapsed = performance.now() - reachedPiTime;
+
+    if (elapsed >= 3000 && !piShown) {     // 5 seconds
+      showPiResult(n);
+    }
+  }
+
   if (cameraFrozen) {
-    const smallGone = (refBlock.x - cameraX) + 1 > canvas.width;
-    const bigGone   = (bigBlock.x - cameraX) + 1 > canvas.width;
+    const smallGone = (refBlock.x - cameraX) - 10  > canvas.width;
+    const bigGone   = (bigBlock.x - cameraX)  > canvas.width;
 
     if (smallGone && bigGone) {
       running = false;
-      simulationTerminated = true;
+
       console.log("sim terminated after drift-off");
       console.log("total collisions =", collisions);
-      simulationTermination.textContent = "simulation terminate";
     }
   }
 }
@@ -185,7 +238,7 @@ if (blocksVisible && blockAlpha < 1) {
     // console.log("refBlock:", refBlock);
     // console.log("bigBlock:", bigBlock);
 
-    // 1. wall bounce — only if moving left
+    // 1. wall bounce  only if moving left
     // if (refBlock.x < 0) {
     //   refBlock.x = 0;
     //   if (refBlock.vx < 0) {
@@ -201,7 +254,7 @@ if (blocksVisible && blockAlpha < 1) {
       playCollisionSound();
     }
 
-    // 2. block–block collision — only if small isn't stuck on wall
+    // 2. block–block collision  only if small isn't stuck on wall
     // if (bigBlock.x <= refBlock.x + refBlock.width) {
     //   bigBlock.x = refBlock.x + refBlock.width;
 
@@ -250,7 +303,7 @@ if (blocksVisible && blockAlpha < 1) {
   }
 
 
-  // CAMERA FOLLOW – keep largest x visible
+  // CAMERA FOLLOW keep largest x visible
       const rightmost = Math.max(
     refBlock.x + refBlock.width,
     bigBlock.x + bigBlock.width
@@ -288,6 +341,7 @@ if (cameraX < 0) cameraX = 0;
 
   drawBlock(ctx, refBlock);
   drawBlock(ctx, bigBlock);
+
   
 }
 
@@ -324,7 +378,7 @@ if (cameraX < 0) cameraX = 0;
 //intro text
 const text = `In 2003, physicist Gregory Galperin published a research paper showing how an idealized elastic collision simulation between two blocks can be used to compute digits of π. The setup is famously absurd in its inefficiency, requiring exponentially more collisions, and thus time, to reveal each additional digit, and it has since become known in the mathematics community as one of the most comically impractical ways to approximate π. But we couldn’t possibly pass up the chance to try it out for ourselves, could we? So let’s go ahead;
 
-How many digits of π would you like to compute today?`;
+How many digits of π would you like to compute today? `;
 
 const p = document.getElementById("typewriter");
 
@@ -356,7 +410,7 @@ function type() {
     if (i < beforeText.length) {
       normalSpan.textContent += beforeText[i];
       i++;
-      setTimeout(type, 25);
+      setTimeout(type, 1); //typing speed, og is 25
     } else {
       phase = "bold";   
       setTimeout(type, 500); 
@@ -387,9 +441,9 @@ document.addEventListener("keydown", e => {
   if (!typingDone) return;
 
   // numbers only
-  if (e.key >= "0" && e.key <= "6") {
+  if (e.key >= "0" && e.key <= "9") {
     userInput += e.key;
-    p.insertBefore(document.createTextNode(" " + e.key), cursor);
+    p.insertBefore(document.createTextNode(e.key), cursor);
   }
 
   // delete
@@ -400,32 +454,142 @@ document.addEventListener("keydown", e => {
 });
 
 
+//estimate time
+function collisionCount(n) {
+  return Math.floor(Math.PI * Math.pow(10, n));
+}
+
+let msPerCollision = 0.0;
+
+(function benchmark() {
+  const testN = 3; // cheap test
+  const tests = collisionCount(testN);
+
+  let x1 = 1, v1 = 0, m1 = 1;
+  let x2 = 2, v2 = -50, m2 = 100;
+
+  const t0 = performance.now();
+
+  for (let i = 0; i < tests; i++) {
+    const v1n =
+      ((m1 - m2) / (m1 + m2)) * v1 +
+      (2 * m2 / (m1 + m2)) * v2;
+
+    const v2n =
+      (2 * m1 / (m1 + m2)) * v1 +
+      ((m2 - m1) / (m1 + m2)) * v2;
+
+    v1 = v1n;
+    v2 = v2n;
+
+    x1 += v1 * 0.001;
+    x2 += v2 * 0.001;
+  }
+
+  const t1 = performance.now();
+  msPerCollision = (t1 - t0) / tests;
+})();
+
+function humanDuration(seconds) {
+  if (seconds < 60) return `${seconds.toFixed(1)} seconds`;
+  if (seconds < 3600) return `${(seconds/60).toFixed(1)} minutes`;
+  if (seconds < 86400) return `${(seconds/3600).toFixed(1)} hours`;
+  if (seconds < 31557600) return `${(seconds/86400).toFixed(1)} days`;
+  return `${(seconds/31557600).toFixed(1)} years`;
+}
+
+
+function estimateYears(n) {
+  const collisions = collisionCount(n);
+
+  const seconds = (collisions * msPerCollision) / 1000;
+
+  return humanDuration(seconds);
+}
+
+
+let warningActive = false;
+let pendingN = null;
+
 
 // simulation
 document.addEventListener("keydown", e => {
 
-  if (!typingDone && !running) return;
+  if (!typingDone) return;
 
+  console.log(running)
+  
+
+  let newN = Number(userInput);
+
+      
 
   if (e.key === "Enter" && userInput.length > 0) {
 
+    if (running === true) return;
+
+    if (warningActive && userInput == newN ) {
+      warningActive = false;
+
+      const warning = document.getElementById("pi-warning");
+      warning.classList.remove("show");
+      normalSpan.classList.add("fade-out")
+
+      setTimeout(() => {
+          p.classList.add("move-to-top");
+      }, 20);
+
+      n = newN;
+
+      console.log("starting with n = ", n);
+
+      setVariables();
+      lastTime = null;
+      axisProgress  = 0;
+      axisAnimating = true;
+      blocksVisible = false;
+      blockAlpha    = 0;
+
+      cameraFrozen  = false;
+      running       = true;
+
+      canvasDiv.style.display = "block";
+      requestAnimationFrame(animate);
+      collisionCounter.classList.add("fade-in");
+      return;
+    }
+
+    if (newN > 3) {
+
+      const warning = document.getElementById("pi-warning");
+      const text = document.getElementById("warn-text");
+
+      const years = estimateYears(newN);
+
+      text.innerHTML =
+        `are you sure? this operation would take 
+         <span style="color:#ff4d4d">${years}</span> to finish.`;
+
+      warning.classList.remove("hidden");
+      warning.classList.add("show");
+
+      warningActive = true;  
+      pendingN = newN;        
+
+      return;
+    }
+
+
     normalSpan.classList.add("fade-out")
 
-    // fade intro text
     setTimeout(() => {
         p.classList.add("move-to-top");
     }, 20);
 
-    // lift question up
-    
 
     setTimeout(() => { 
 
-      let newN = Number(userInput);
-      if (newN < 0) newN = 0;
-      if (newN > 6) newN = 6;
-
-      n = newN;
+ 
 
       console.log("starting with n = ", n);
 
