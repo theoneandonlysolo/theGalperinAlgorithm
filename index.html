@@ -5,25 +5,33 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Galperin Algorithm</title>
+    <link rel="icon" href="./assets/favicon.png" type="image/png">
     <link rel="stylesheet" href="./style.css">
     <link href="https://db.onlinewebfonts.com/c/a1e42bc1b0ae0dcaac8324cfce7f2b23?family=Anka%2FCoder+Condensed+Regular" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/aaaakshat/cm-web-fonts@latest/fonts.css">
 </head>
 <body>
+  
+  <div id="mobile-block">
+    <p>
+      Unfortunately, this website doesn't support mobile.<br><br>
+    <strong>Yet.</strong>
+    </p>
+  </div>
 
-
-<div class="crt">
- <div id="crtC" class="crt-content">
-  <p id="typewriter"></p>
-    <div id ="appear" className="canvasDiv">
-        <h2 id="collisions"># of collisions: </h2>
-        <canvas id="screen" width="1000" height="350"></canvas>  
-    </div>
-    <div id="pi-warning" class="hidden">
-        <img src="./assets/info.png" class="warn-icon" />
-        <span id="warn-text"></span>
+  <div class="crt">
+    <div id="crtC" class="crt-content">
+      <p id="typewriter"></p>
+        <div id ="appear" className="canvasDiv">
+            <h2 id="collisions"># of collisions: </h2>
+            <canvas id="screen" width="1000" height="350"></canvas>  
+        </div>
+        <div id="pi-warning" class="hidden">
+            <img src="./assets/info.png" class="warn-icon" />
+            <span id="warn-text"></span>
+        </div>
     </div>
   </div>
-</div>
 
 <script src="./index.js"></script>   
 </body>

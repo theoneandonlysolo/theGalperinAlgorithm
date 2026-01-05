@@ -80,10 +80,24 @@ body {
  
 }
 
-/* bold question moves to “header” position */
+/* default: screens wider than 1332px */
 .move-to-top {
   position: absolute;
   transform: translateY(-22rem);
+}
+
+/* 992px - 1332px */
+@media (min-width: 992px) and (max-width: 1332px) {
+  .move-to-top {
+    transform: translateY(-23rem);
+  }
+}
+
+/* 768px -992px */
+@media (min-width: 768px) and (max-width: 992px) {
+  .move-to-top {
+    transform: translateY(-24rem);
+  }
 }
 
 
@@ -115,7 +129,7 @@ body {
   justify-content: center;
   align-items: left;     
   margin-left: 7.5%;   
-  margin-right: 7.5%;   
+  margin-right: 3.5%;   
   color: white;
   gap: 55px;
   transform: perspective(600px) scale(1.03) rotateX(3deg); 
@@ -162,11 +176,11 @@ body {
 @import url('fonts.googleapis.com');
 
 #pi-output {
-  font-family: "Times New Roman", Times, serif;
+  font-family: "Computer Modern Serif", serif;;
   font-size: 22px;
   white-space: pre;
   color: white;
-  margin-top: -20px;
+  margin-top: -50px;
   margin-bottom: -50px;
   opacity: 0;
   transition: opacity 0.8s ease;
@@ -193,7 +207,7 @@ body {
   transform: translateY(-10px);
   transition: opacity .4s ease, transform .4s ease;
   margin-top: -50px;
-  width: 30%;
+  width: 255px;
   padding: 5px;
 }
 
@@ -207,6 +221,48 @@ body {
   transform: translateY(0);
 }
 
+.shake {
+  animation: warning-shake 0.25s linear;
+}
+
+@keyframes warning-shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+  100% { transform: translateX(0); }
+}
+
 .hidden {
+  opacity: 0;
   display: none;
+}
+
+#mobile-block {
+  display: none;
+}
+
+@media only screen and (max-width: 768px) {
+  #mobile-block {
+    margin: 10%;
+    display: flex !important;
+    color: white !important;
+    text-align: center;
+    font-family: monospace;
+    font-size: 18px;
+
+    position: fixed;
+    inset: 0;
+
+    justify-content: center;
+    align-items: center;
+
+    background: black;
+    z-index: 9999;
+  }
+
+  body > *:not(#mobile-block) {
+    display: none !important;
+  }
 }
