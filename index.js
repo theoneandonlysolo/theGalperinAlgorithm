@@ -36,11 +36,16 @@ let refBlock = null;
 let bigBlock = null;
 let collisions = null;
 
+function getMassExponent(value) {
+  return Math.max(0, value - 1);
+}
+
 //compute a visible size for the big block based on its mass 
 function getBigBlockSize(n) {
   const base = 75;
 
-  let size = base + Math.log10(100 ** n) * 12;
+  const exponent = getMassExponent(n);
+  let size = base + Math.log10(100 ** exponent) * 12;
 
   size = Math.max(60, Math.min(size, 220));
 
@@ -52,6 +57,7 @@ function setVariables() {
   collisions = 0;
   cameraX = 0;
   const size = getBigBlockSize(n);
+  const exponent = getMassExponent(n);
 
   refBlock = {
     mass: 1,
@@ -63,7 +69,7 @@ function setVariables() {
   };
 
   bigBlock = {
-    mass: 100 ** n,
+    mass: 100 ** exponent,
     x: 420,
     y: 297,
     width: size,
@@ -178,9 +184,10 @@ function showPiResult(n) {
   const digits = "3.1415926535897932384626433832795...";
   const before = "π = ";
 
+  const exponent = getMassExponent(n);
   const highlighted =
-    `<span class="highlight">${digits.slice(0, n + 2)}</span>` +
-    digits.slice(n + 2);
+    `<span class="highlight">${digits.slice(0, exponent + 2)}</span>` +
+    digits.slice(exponent + 2);
 
   let i = 0;
   const temp = document.createElement("span");
@@ -212,9 +219,9 @@ let collisionBlinkOn = false;
 
 //control when the camera freezes and when the prompt warning appears
 function checkTermination() {
-  const expected = Math.floor(Math.PI * Math.pow(10, n));
+  const expected = collisionCount(n);
 
-  if (n > 1 && simStartTime !== null && !tryAgainShown) {
+  if (n > 2 && simStartTime !== null && !tryAgainShown) {
     const sinceStart = performance.now() - simStartTime;
     if (sinceStart >= 7000) {
       tryAgainShown = true;
@@ -240,7 +247,7 @@ function checkTermination() {
     if (elapsed >= 3000 && !piShown) {
       showPiResult(n);
     }
-    if (n <= 1 && elapsed >= 10000 && !tryAgainShown) {
+    if (n <= 2 && elapsed >= 10000 && !tryAgainShown) {
       tryAgainShown = true;
 
       const warning = document.getElementById("pi-warning");
@@ -388,7 +395,7 @@ function animate(time) {
       refBlock.x + refBlock.width,
       bigBlock.x + bigBlock.width
     );
-    const expected = Math.floor(Math.PI * Math.pow(10, n));
+    const expected = collisionCount(n);
     const margin = 200;
     if (rightmost > canvas.width - margin && collisions - 1 === expected) {
       cameraX = rightmost - (canvas.width - margin);
@@ -489,20 +496,21 @@ document.addEventListener("keydown", e => {
 //collision count is the integer part of pi times ten to the power of n
 //this matches the theoretical total collisions for the galperin setup
 function collisionCount(n) {
-  return Math.floor(Math.PI * Math.pow(10, n));
+  const exponent = getMassExponent(n);
+  return Math.floor(Math.PI * Math.pow(10, exponent));
 }
 
 const timeCalibration = {
-  1: 5,
-  2: 60,
+  2: 5,
+  3: 60,
 };
 
 //convert collision count to seconds
 function estimateSecondsFromCalibration(n) {
-  const c1 = collisionCount(1);
-  const c2 = collisionCount(2);
-  const t1 = timeCalibration[1];
-  const t2 = timeCalibration[2];
+  const c1 = collisionCount(2);
+  const c2 = collisionCount(3);
+  const t1 = timeCalibration[2];
+  const t2 = timeCalibration[3];
 
   const slope = (t2 - t1) / (c2 - c1);
   const intercept = t1 - slope * c1;
@@ -535,7 +543,8 @@ let physicsLimitActive = false;
 
 //compute the exponent used for the big block mass label
 function getBigBlockExponent(value) {
-  const mass = 100 ** value;
+  const exponent = getMassExponent(value);
+  const mass = 100 ** exponent;
   if (!Number.isFinite(mass)) return Infinity;
   return Math.floor(Math.log10(mass));
 }
@@ -572,7 +581,7 @@ function updateYearsWarning(value) {
   const warning = document.getElementById("pi-warning");
   const text = document.getElementById("warn-text");
 
-  if (value > 3) {
+  if (value > 4) {
     const shouldPlay = !warningActive || warnedN !== value;
     const seconds = estimateSecondsFromCalibration(value);
     if (!Number.isFinite(seconds)) {
@@ -628,7 +637,7 @@ document.addEventListener("keydown", e => {
   if (e.key === "Enter" && userInput.length > 0) {
     n = newN;
 
-    if (newN > 3) {
+    if (newN > 4) {
       if (warningActive && warnedN === newN) {
         if (isPhysicsLimit(newN)) {
           showPhysicsLimitWarning(newN);

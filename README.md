@@ -18,7 +18,7 @@ In 2003, physicist Gregory Galperin published a research paper showing how an id
 
 - Place a small block (mass = 1) in front of a wall.
 
-- Place a second block to the right of it with mass = 100 to the power of 𝑛, where is how many digits of π you want to compute.
+- Place a second block to the right of it with mass = 100 to the power of (𝑛 − 1), where is how many digits of π you want to compute.
 
 - Give the larger block a velocity moving toward the smaller one.
 
@@ -37,10 +37,10 @@ The number of collisions (written as digits) = digits of π.
 
 | n | Mass ratio    | Collisions ≈ |
 | - | ------------- | ------------ |
-| 0 | 1 : 1         | 3            |
-| 1 | 1 : 100       | 31           |
-| 2 | 1 : 10,000    | 314          |
-| 3 | 1 : 1,000,000 | 3141         |
+| 1 | 1 : 1         | 3            |
+| 2 | 1 : 100       | 31           |
+| 3 | 1 : 10,000    | 314          |
+| 4 | 1 : 1,000,000 | 3141         |
 
 
  
@@ -226,15 +226,15 @@ When the user enters a large value of n, the simulation will need an **insane nu
 
 Roughly:
 
--   n = 1 => 31 collisions
-    
--   n = 2 => 314 collisions
-    
--   n = 3 => 3141 collisions
-    
--   n = 6 => 3,141,592 collisions
-    
--   n = 10 => **314,159,265,358 collisions**
+- n = 1 => 3 collisions
+
+- n = 2 => 31 collisions
+
+- n = 3 => 314 collisions
+
+- n = 6 => 314,159 collisions
+
+- n = 10 => 31,415,926,535 collisions
     
 
 So the question the UI is answering is:
