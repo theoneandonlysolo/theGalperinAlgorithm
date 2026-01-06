@@ -292,11 +292,17 @@ and then choose the largest meaningful unit.
 
 # Project Info
 Duration: 1 month (1 week planning + 3 weeks developing)
-Languages used: JavaScript, CSS, and HTML
+
+ Languages used: JavaScript, CSS, and HTML
+
 Developer: @theoneandonlysolo, *aka Adam Maad*
+
 Purpose: Purely Educational
+
 Text Editor: Visual Studio Code
+
 Apps used: Canvas (for design), [stackedit.io](https://stackedit.io/) (for writing this README.md you're reading *right now*), [freesound.org](freesound.org) (for sound effects)
+
 What I learned:
 - how `<canvas>` works
 - how to properly implement physics equations into JS
