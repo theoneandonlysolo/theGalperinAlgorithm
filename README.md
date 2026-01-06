@@ -6,7 +6,7 @@
 [Galperin, “Playing Pool with π (The Number π from a Billiard Point of View)”, 2003](https://rcd.ics.org.ru/RD2003v008n04ABEH000252)
 
 
-(/assets/README.img/img1.png)
+![](assets/README.img/img1.png)
   
 In 2003, physicist Gregory Galperin published a research paper showing how an idealized elastic collision simulation between two blocks can be used to compute digits of π. The setup is famously absurd in its inefficiency, requiring exponentially more collisions to reveal each additional digit, and it has since become known in the mathematics community as one of the most comically impractical ways to approximate π.
 
@@ -79,7 +79,7 @@ to manage them, each block is stored in a JavaScript structure that keeps track 
 
 Then, using `fillRect()`, the simulation draws the block pixels on the canvas every frame.
 
-(/assets/README.img/func2.png)
+![](assets/README.img/func2.png)
 
 ### Movement
 
@@ -99,7 +99,7 @@ This loop runs continuously using `requestAnimationFrame()`, which makes the mot
 The result:  
 the animation is literally just rectangles being repeatedly erased and redrawn very fast.
 
-(/assets/README.img/func3.png)
+![](assets/README.img/func3.png)
 
 ----------
 
@@ -123,7 +123,7 @@ basically:
 
 The code simply replaces each velocity with the new values immediately after a collision.
 
-(/assets/README.img/func4.png)
+![](assets/README.img/func4.png)
 
 ----------
 
@@ -149,7 +149,7 @@ Inside the simulation loop, every time:
 
 the program increases a counter.
 
-(/assets/README.img/num.png)
+![](assets/README.img/num.png)
 
 ----------
 
@@ -164,7 +164,7 @@ To make the simulation easier to follow visually:
 
 only after the axes finish animating do the blocks fade onto the screen (this purely for aesthetics)
 
-(/assets/README.img/func3.png)
+![](assets/README.img/func3.png)
 
 ## *The typewriter mechanism*
 The typewriter effect is implemented by progressively _revealing_ text rather than writing it all to the page at once.
@@ -182,7 +182,7 @@ on each tick:
 
 Because the DOM (html content) is updated repeatedly (in a loop), the text appears in order without any animations or special libraries. The “cursor” you see is just a styled `<span>` positioned at the end of the text. A CSS animation toggles its opacity so it blinks like a terminal prompt.
 
-(/assets/README.img/func5.png)
+![](assets/README.img/func5.png)
 
 ## *Notification System*
 The notification system isn’t a normal alert sent by the browser, it’s entirely controlled by the simulation logic.
@@ -217,7 +217,7 @@ So the user sees something like:
 Importantly, this warning also changes how input is handled:  
 the program enters a “waiting” state instead of immediately running the simulation. The simulation only proceeds if the user presses Enter again, confirming they understand/read the warniing.
 
-(/assets/README.img/func6.png)
+![](assets/README.img/func6.png)
 
 ## *How the estimateTime() function works*
 While it is only a subtle thing many wouldn't notice, it took quite some time (5 days) to completley finishing writing the algorithm and mechanism for how it works. Here's the rough scheme:
@@ -255,7 +255,7 @@ so the function first estimates:
 
 this comes directly from Galperin’s theorem.
 
-(/assets/README.img/func7.png)
+![](assets/README.img/func7.png)
 
 ----------
 
@@ -288,7 +288,7 @@ seconds => minutes => hours => days => years
 
 and then choose the largest meaningful unit.
 
-(/assets/README.img/func8.png)
+![](assets/README.img/func8.png)
 
 # Project Info
 Duration: 1 month (1 week planning + 3 weeks developing)
