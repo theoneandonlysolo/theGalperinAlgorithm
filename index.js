@@ -338,7 +338,7 @@ function animate(time) {
       refBlock.x = 0;
       refBlock.vx = -refBlock.vx;
       collisions++;
-      playCollisionSound();
+      // playCollisionSound();
     }
 
     if (
@@ -364,7 +364,7 @@ function animate(time) {
       bigBlock.vx = v2;
 
       collisions++;
-      playCollisionSound();
+      // playCollisionSound();
     }
   }
 
@@ -439,7 +439,7 @@ function type() {
     if (i < beforeText.length) {
       normalSpan.textContent += beforeText[i];
       i++;
-      setTimeout(type, 1); //default speed is 25, 1 is set to speed up testing cuz 25 is too slow and annoying
+      setTimeout(type, 25); //default speed is 25, 1 is set to speed up testing cuz 25 is too slow and annoying
     } else {
       phase = "bold";
       setTimeout(type, 500);
