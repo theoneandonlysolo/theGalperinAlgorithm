@@ -30,6 +30,12 @@ body {
     width: 900px;
     overflow-x: auto;
     overflow-y: hidden;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.canvasDiv::-webkit-scrollbar {
+  display: none;
 }
 
 
@@ -127,7 +133,7 @@ body {
   display: flex;
   flex-direction: column; 
   justify-content: center;
-  align-items: left;     
+  align-items: flex-start;
   margin-left: 7.5%;   
   margin-right: 3.5%;   
   color: white;
@@ -173,8 +179,6 @@ body {
   animation: flicker 0.12s infinite;
 }
 
-@import url('fonts.googleapis.com');
-
 #pi-output {
   font-family: "Computer Modern Serif", serif;;
   font-size: 22px;
@@ -192,8 +196,6 @@ body {
   font-size: 22px;
   opacity: 1;
 }
-
-@import url(https://db.onlinewebfonts.com/c/e35a02b1a50c9385c63b9ef30afb6b06?family=Architype+Fodor+W00);
 
 #pi-warning {
   border: 1px solid white;
